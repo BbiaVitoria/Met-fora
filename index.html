@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Jogo de Português - Estilo Wordwall</title>
+    <script src="https://jsdelivr.net"></script>
+    <style> body { margin: 0; display: flex; justify-content: center; background: #e0f2f1; } </style>
+</head>
+<body>
+
+<script>
+const config = {
+    type: Phaser.AUTO,
+    width: 800,
+    height: 600,
+    backgroundColor: '#81d4fa', // Fundo azul céu
+    scene: { preload: preload, create: create }
+};
+
+const game = new Phaser.Game(config);
+
+function preload() {
+    // Aqui você carregaria imagens de grama, terra e tartaruga
+}
+
+function create() {
+    // 1. Texto da Pergunta
+    this.add.text(400, 100, "Seus olhos são como jabuticabas.", {
+        fontSize: '42px',
+        fill: '#1a237e',
+        fontStyle: 'bold',
+        backgroundColor: '#ffffffaa',
+        padding: 10
+    }).setOrigin(0.5);
+
+    // 2. Criação das "Caixas" (Botões)
+    const btnMetafora = criarBotao(this, 250, 400, "METÁFORA", () => {
+        alert("Errado! Lembre-se do conectivo 'COMO'.");
+    });
+
+    const btnComparacao = criarBotao(this, 550, 400, "COMPARAÇÃO", () => {
+        alert("Correto! O 'COMO' indica uma comparação explícita.");
+    });
+}
+
+function criarBotao(scene, x, y, texto, acao) {
+    // Representação da "terra/grama" com retângulos
+    const container = scene.add.container(x, y);
+    
+    const base = scene.add.rectangle(0, 0, 250, 150, 0x5d4037).setStrokeStyle(4, 0x3e2723);
+    const grama = scene.add.rectangle(0, -75, 250, 40, 0x689f38);
+    const txt = scene.add.text(0, 0, texto, { fontSize: '28px', fill: '#fff', fontStyle: 'bold' }).setOrigin(0.5);
+
+    container.add([base, grama, txt]);
+    
+    // Tornar interativo
+    base.setInteractive({ useHandCursor: true });
+    base.on('pointerdown', acao);
+    
+    // Efeito visual de "hover"
+    base.on('pointerover', () => base.setFillStyle(0x795548));
+    base.on('pointerout', () => base.setFillStyle(0x5d4037));
+
+    return container;
+}
+</script>
+
+</body>
+</html>
