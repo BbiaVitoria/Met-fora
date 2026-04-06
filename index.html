@@ -1,38 +1,247 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desafio da Selva: Metáfora vs Comparação</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jogo - Figuras de Linguagem</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: linear-gradient(#8fd694, #3a7d44);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: white;
+}
+
+.container {
+  width: 90%;
+  max-width: 600px;
+  text-align: center;
+}
+
+.card {
+  background: #5a3e2b;
+  padding: 25px;
+  border-radius: 20px;
+  border: 5px solid #7fbf7f;
+}
+
+input {
+  padding: 10px;
+  width: 80%;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  border: none;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  background: #6b4f3a;
+  color: white;
+  cursor: pointer;
+}
+
+.topo {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.botoes {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.botao {
+  flex: 1;
+  padding: 15px;
+  background: #6b4f3a;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.feedback {
+  margin-top: 10px;
+  height: 25px;
+}
+
+.correto { color: #00ff88; }
+.errado { color: #ff4d4d; }
+
+.ranking {
+  margin-top: 15px;
+  text-align: left;
+  font-size: 14px;
+}
+</style>
 </head>
+
 <body>
-    <div class="game-container">
-        <header>
-            <div class="stat-box">Tempo: <span id="timer">05:00</span></div>
-            <div class="stat-box">Acertos: <span id="score">0</span></div>
-        </header>
 
-        <main id="game-screen">
-            <div id="card-container">
-                <div id="phrase-card" class="card">
-                    <p id="phrase-text">Carregando desafio...</p>
-                </div>
-                <div id="feedback" class="hidden"></div>
-            </div>
+<div class="container">
 
-            <div class="controls">
-                <button class="btn btn-metaphor" onclick="checkAnswer('metafora')">Metáfora</button>
-                <button class="btn btn-comparison" onclick="checkAnswer('comparacao')">Comparação</button>
-            </div>
-        </main>
+<!-- TELA INICIAL -->
+<div id="inicio" class="card">
+  <h2>Digite seu nome</h2>
+  <input id="nome" placeholder="Seu nome">
+  <br>
+  <button onclick="iniciarJogo()">Começar</button>
 
-        <div id="end-screen" class="hidden">
-            <h2>Missão Cumprida!</h2>
-            <p>Você resgatou <span id="final-score">0</span> frases na selva.</p>
-            <button class="btn-restart" onclick="location.reload()">Jogar Novamente</button>
-        </div>
+  <div class="ranking" id="ranking"></div>
+</div>
+
+<!-- JOGO -->
+<div id="jogo" style="display:none">
+  <div class="topo">
+    <div>⏱ <span id="tempo">240</span>s</div>
+    <div>⭐ <span id="pontos">0</span></div>
+  </div>
+
+  <div class="card">
+    <div id="frase"></div>
+
+    <div class="botoes">
+      <div class="botao" onclick="responder('metafora')">METÁFORA</div>
+      <div class="botao" onclick="responder('comparacao')">COMPARAÇÃO</div>
     </div>
-    <script src="script.js"></script>
+
+    <div id="feedback" class="feedback"></div>
+  </div>
+</div>
+
+</div>
+
+<!-- SONS -->
+<audio id="somAcerto" src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9b2b2c.mp3"></audio>
+<audio id="somErro" src="https://cdn.pixabay.com/audio/2022/03/15/audio_4c7e0a9c91.mp3"></audio>
+
+<script>
+const frases = [
+  { texto: "Seus olhos são como jabuticabas", tipo: "comparacao" },
+  { texto: "Ela é uma flor", tipo: "metafora" },
+  { texto: "Ele corre como um leão", tipo: "comparacao" },
+  { texto: "Meu coração é um gelo", tipo: "metafora" },
+  { texto: "Forte como um touro", tipo: "comparacao" },
+  { texto: "A vida é um teatro", tipo: "metafora" },
+  { texto: "Brilha como o sol", tipo: "comparacao" },
+  { texto: "Seus cabelos são ouro", tipo: "metafora" },
+  { texto: "Frio como gelo", tipo: "comparacao" },
+  { texto: "Ela é uma estrela", tipo: "metafora" },
+  { texto: "Doce como mel", tipo: "comparacao" },
+  { texto: "O tempo é dinheiro", tipo: "metafora" },
+  { texto: "Rápido como um foguete", tipo: "comparacao" },
+  { texto: "Ele é um leão na batalha", tipo: "metafora" },
+  { texto: "Leve como uma pluma", tipo: "comparacao" },
+  { texto: "Ela tem um coração de pedra", tipo: "metafora" },
+  { texto: "Grita como um louco", tipo: "comparacao" },
+  { texto: "Ele é um poço de sabedoria", tipo: "metafora" },
+  { texto: "Corre como o vento", tipo: "comparacao" },
+  { texto: "A mente dele é um labirinto", tipo: "metafora" }
+];
+
+let i = 0;
+let pontos = 0;
+let tempo = 240;
+let nomeJogador = "";
+let ativo = true;
+
+// ELEMENTOS
+const fraseEl = document.getElementById("frase");
+const feedbackEl = document.getElementById("feedback");
+
+// INICIAR
+function iniciarJogo() {
+  nomeJogador = document.getElementById("nome").value.trim();
+  if (!nomeJogador) return alert("Digite seu nome!");
+
+  document.getElementById("inicio").style.display = "none";
+  document.getElementById("jogo").style.display = "block";
+
+  mostrarFrase();
+  timer();
+}
+
+// FRASE
+function mostrarFrase() {
+  if (i >= frases.length) return fim();
+
+  feedbackEl.textContent = "";
+  fraseEl.textContent = frases[i].texto;
+}
+
+// RESPONDER
+function responder(tipo) {
+  if (!ativo) return;
+
+  const correta = frases[i].tipo;
+
+  if (tipo === correta) {
+    pontos += 0.5;
+    feedbackEl.textContent = "✔ Correto!";
+    feedbackEl.className = "feedback correto";
+    document.getElementById("somAcerto").play();
+  } else {
+    feedbackEl.textContent = "✖ " + correta;
+    feedbackEl.className = "feedback errado";
+    document.getElementById("somErro").play();
+  }
+
+  document.getElementById("pontos").textContent = pontos.toFixed(1);
+
+  i++;
+  setTimeout(mostrarFrase, 1000);
+}
+
+// TIMER
+function timer() {
+  const t = setInterval(() => {
+    tempo--;
+    document.getElementById("tempo").textContent = tempo;
+
+    if (tempo <= 0) {
+      clearInterval(t);
+      fim();
+    }
+  }, 1000);
+}
+
+// FIM
+function fim() {
+  ativo = false;
+  salvarRanking();
+  alert("Fim! Pontuação: " + pontos);
+  location.reload();
+}
+
+// LOCAL STORAGE (BANCO SIMPLES)
+function salvarRanking() {
+  let ranking = JSON.parse(localStorage.getItem("ranking")) || [];
+  ranking.push({ nome: nomeJogador, pontos });
+  ranking.sort((a,b) => b.pontos - a.pontos);
+  localStorage.setItem("ranking", JSON.stringify(ranking.slice(0,5)));
+}
+
+// MOSTRAR RANKING
+function carregarRanking() {
+  let ranking = JSON.parse(localStorage.getItem("ranking")) || [];
+  let html = "<h4>Ranking</h4>";
+
+  ranking.forEach(r => {
+    html += `<div>${r.nome} - ${r.pontos}</div>`;
+  });
+
+  document.getElementById("ranking").innerHTML = html;
+}
+
+carregarRanking();
+</script>
+
 </body>
 </html>
