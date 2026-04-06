@@ -228,19 +228,7 @@ function salvarRanking() {
   localStorage.setItem("ranking", JSON.stringify(ranking.slice(0,5)));
 }
 
-// MOSTRAR RANKING
-function carregarRanking() {
-  let ranking = JSON.parse(localStorage.getItem("ranking")) || [];
-  let html = "<h4>Ranking</h4>";
 
-  ranking.forEach(r => {
-    html += `<div>${r.nome} - ${r.pontos}</div>`;
-  });
-
-  document.getElementById("ranking").innerHTML = html;
-}
-
-carregarRanking();
 </script>
 
 </body>
