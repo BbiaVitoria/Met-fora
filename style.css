@@ -1,0 +1,119 @@
+:root {
+    --jungle-dark: #1b4332;
+    --jungle-green: #2d6a4f;
+    --leaf-green: #74c69d;
+    --earth-brown: #6c584c;
+    --sand: #f0ead2;
+    --correct: #2ecc71;
+    --wrong: #e74c3c;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+body {
+    background: radial-gradient(circle, var(--jungle-green), var(--jungle-dark));
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--sand);
+}
+
+.game-container {
+    width: 90%;
+    max-width: 600px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 4px solid var(--earth-brown);
+    text-align: center;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.stat-box {
+    background: var(--earth-brown);
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: bold;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+}
+
+/* Card de Frase */
+#card-container {
+    position: relative;
+    height: 200px;
+    margin-bottom: 40px;
+}
+
+.card {
+    background: var(--sand);
+    color: var(--jungle-dark);
+    padding: 30px;
+    border-radius: 15px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Botões */
+.controls {
+    display: flex;
+    gap: 20px;
+}
+
+.btn {
+    flex: 1;
+    padding: 20px;
+    border: none;
+    border-radius: 15px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: white;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.2);
+}
+
+.btn:active { transform: translateY(4px); box-shadow: none; }
+
+.btn-metaphor { background: #d4a373; border: 3px solid #a98467; }
+.btn-comparison { background: #a3b18a; border: 3px solid #588157; }
+
+/* Feedback */
+#feedback {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 5rem;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.hidden { display: none !important; }
+
+/* Animações */
+@keyframes pop {
+    0% { transform: scale(0); opacity: 0; }
+    80% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-pop { animation: pop 0.4s ease-out; }
+
+/* Responsividade */
+@media (max-width: 480px) {
+    .controls { flex-direction: column; }
+    .card { font-size: 1.1rem; }
+}
