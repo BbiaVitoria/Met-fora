@@ -252,6 +252,8 @@ function mostrarRankingFinal() {
       <div id="rankingFinal"></div>
       <br>
       <button onclick="location.reload()">Jogar novamente</button>
+      <br><br>
+      <button onclick="modoProfessor()"> Modo Professor </button>
     </div>
   `;
 
@@ -263,7 +265,48 @@ function mostrarRankingFinal() {
   });
 
   document.getElementById("rankingFinal").innerHTML = html;
+
+  renderRanking();
 }
+
+
+
+function renderRanking() {
+  let ranking = JSON.parse(localStorage.getItem("ranking")) || [];
+  let html = "";
+
+  ranking.forEach((r, index) => {
+    html += `
+      <div>
+        ${index+1}. ${r.nome} - ${r.pontos}
+        <button onclick="excluir(${index})" style="margin-left:10px">❌</button>
+      </div>
+    `;
+  });
+
+  document.getElementById("rankingFinal").innerHTML = html;
+}
+
+
+
+
+
+function excluir(index) {
+  const senha = prompt("Digite a senha do professor:");
+
+  if (senha !== "1234") {
+    alert("Senha incorreta!");
+    return;
+  }
+
+  let ranking = JSON.parse(localStorage.getItem("ranking")) || [];
+  ranking.splice(index, 1);
+
+  localStorage.setItem("ranking", JSON.stringify(ranking));
+  renderRanking();
+}
+
+
 </script>
 
 </body>
