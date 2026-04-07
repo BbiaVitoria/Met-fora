@@ -152,7 +152,6 @@ let tempo = 240;
 let nomeJogador = "";
 let ativo = true;
 
-// ELEMENTOS
 const fraseEl = document.getElementById("frase");
 const feedbackEl = document.getElementById("feedback");
 
@@ -215,33 +214,56 @@ function timer() {
 // FIM
 function fim() {
   ativo = false;
-  salvarRanking();
-  alert("Fim! Pontuação: " + pontos);
-  location.reload();
+
+  enviarParaFormspree();
+  salvarRankingLocal();
+  mostrarRankingFinal();
 }
 
-// LOCAL STORAGE (BANCO SIMPLES)
-function salvarRanking() {
+// ENVIO PARA FORMSPREE
+function enviarParaFormspree() {
+  fetch("https://formspree.io/f/xlgozpjg", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      nome: nomeJogador,
+      pontuacao: pontos
+    })
+  });
+}
+
+// RANKING LOCAL
+function salvarRankingLocal() {
   let ranking = JSON.parse(localStorage.getItem("ranking")) || [];
   ranking.push({ nome: nomeJogador, pontos });
   ranking.sort((a,b) => b.pontos - a.pontos);
   localStorage.setItem("ranking", JSON.stringify(ranking.slice(0,5)));
 }
 
-// MOSTRAR RANKING
-function carregarRanking() {
-  let ranking = JSON.parse(localStorage.getItem("ranking")) || [];
-  let html = "<h4>Ranking</h4>";
+// MOSTRAR RANKING FINAL
+function mostrarRankingFinal() {
+  document.getElementById("jogo").innerHTML = `
+    <div class="card">
+      <h2>Fim de jogo!</h2>
+      <p>${nomeJogador}, sua pontuação: <strong>${pontos}</strong></p>
+      <h3>Ranking</h3>
+      <div id="rankingFinal"></div>
+      <br>
+      <button onclick="location.reload()">Jogar novamente</button>
+    </div>
+  `;
 
-  ranking.forEach(r => {
-    html += `<div>${r.nome} - ${r.pontos}</div>`;
+  let ranking = JSON.parse(localStorage.getItem("ranking")) || [];
+  let html = "";
+
+  ranking.forEach((r, index) => {
+    html += `<div>${index+1}. ${r.nome} - ${r.pontos}</div>`;
   });
 
-  document.getElementById("ranking").innerHTML = html;
+  document.getElementById("rankingFinal").innerHTML = html;
 }
-
-carregarRanking();
-
 </script>
 
 </body>
